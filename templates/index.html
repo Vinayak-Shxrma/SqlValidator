@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SQL Validation System</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>SQL Query Validation System</h1>
+            <p class="subtitle">Based on Compiler Phases</p>
+        </header>
+
+        <div class="main-content">
+            <div class="input-section">
+                <h2>Input Query</h2>
+                <textarea id="sqlQuery" placeholder="Enter your SQL query here... (e.g., SELECT name FROM students;)"></textarea>
+                <button id="validateBtn">Validate Query</button>
+            </div>
+
+            <div class="output-section">
+                <div class="panel" id="tokensPanel">
+                    <h3>Lexical Analysis (Tokens)</h3>
+                    <div class="content" id="tokensContent">Awaiting input...</div>
+                </div>
+
+                <div class="panel error-panel" id="errorsPanel">
+                    <h3>Compiler Errors</h3>
+                    <div class="content" id="errorsContent">No errors detected.</div>
+                </div>
+
+                <div class="panel suggestion-panel" id="suggestionsPanel">
+                    <h3>AI Suggestions</h3>
+                    <div class="content" id="suggestionsContent">No suggestions needed.</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+</html>
