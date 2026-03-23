@@ -23,5 +23,12 @@ class SemanticAnalyzer:
             for col in ast["columns"]:
                 if col != "*" and col not in self.schema[table]["columns"]:
                     errors.append(f"Semantic Error: Unknown column '{col}' in table '{table}'.")
+            
+            if "where" in ast:
+                for token in ast["where"]:
+                    if token["type"] == "IDENTIFIER":
+                        col = token["value"]
+                        if col not in self.schema[table]["columns"]:
+                            errors.append(f"Semantic Error: Unknown column '{col}' in WHERE clause for table '{table}'.")
                     
         return errors

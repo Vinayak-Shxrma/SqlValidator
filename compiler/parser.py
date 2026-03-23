@@ -45,8 +45,12 @@ class Parser:
             if token["value"].upper() == "FROM":
                 state = "FROM"
                 continue
-            elif token["value"].upper() in ["WHERE", "ORDER", "GROUP", "LIMIT"]:
-                break # We only support basic SELECT FROM for this project scope
+            elif token["value"].upper() == "WHERE":
+                state = "WHERE"
+                ast["where"] = []
+                continue
+            elif token["value"].upper() in ["ORDER", "GROUP", "LIMIT"]:
+                break # We only support basic SELECT FROM and simple WHERE for this project scope
                 
             if state == "COLUMNS":
                 if token["type"] == "IDENTIFIER" or (token["type"] == "SYMBOL" and token["value"] == "*"):
@@ -68,6 +72,9 @@ class Parser:
                     break
                 else:
                     errors.append(f"Syntax Error: Unexpected token '{token['value']}' in FROM clause.")
+                    
+            elif state == "WHERE":
+                ast["where"].append(token)
                 
         if not ast["table"]:
             errors.append("Syntax Error: Missing FROM clause.")
