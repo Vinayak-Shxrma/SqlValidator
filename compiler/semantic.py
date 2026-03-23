@@ -13,8 +13,9 @@ class SemanticAnalyzer:
         table = ast["table"]
         
         # 1. Validate Table Exists
-        if table and table not in self.schema:
-            errors.append(f"Semantic Error: Unknown table '{table}'.")
+        if table is None or table not in self.schema:
+            if table is not None:
+                errors.append(f"Semantic Error: Unknown table '{table}'.")
             return errors # Fast fail, we don't know the schema to check columns
             
         # 2. Validate Columns for SELECT statements

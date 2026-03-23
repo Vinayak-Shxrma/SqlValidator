@@ -8,3 +8,5 @@ colorama==0.4.6
 blinker==1.7.0
 Levenshtein==0.25.0
 rapidfuzz==3.6.1
+google-genai
+python-dotenv

@@ -2,7 +2,6 @@ import re
 
 class Lexer:
     def __init__(self):
-        # Tokens are defined using regular expressions.
         self.token_specs = [
             ("KEYWORD", r'\b(SELECT|INSERT|UPDATE|DELETE|FROM|WHERE|INTO|VALUES|SET)\b'),
             ("IDENTIFIER", r'\b[a-zA-Z_][a-zA-Z0-9_]*\b'),

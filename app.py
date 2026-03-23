@@ -20,17 +20,13 @@ def validate():
     data = request.json
     query = data.get('query', '')
     
-    # 1. Lexical Analysis
     tokens, lexical_errors = lexer.tokenize(query)
-    
-    # 2. Syntax Analysis
+   
     ast, syntax_errors = parser.parse(tokens)
         
-    # 3. Semantic Analysis
     semantic_errors = semantic_analyzer.analyze(ast)
         
-    # 4. AI Suggestions
-    suggestions = ai_engine.analyze_errors(tokens, lexical_errors, syntax_errors, semantic_errors)
+    suggestions = ai_engine.analyze_errors(query, tokens, lexical_errors, syntax_errors, semantic_errors)
     
     return jsonify({
         "tokens": tokens,

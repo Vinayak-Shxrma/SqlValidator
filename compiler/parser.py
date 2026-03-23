@@ -53,12 +53,17 @@ class Parser:
                     ast["columns"].append(token["value"])
                 elif token["type"] == "SYMBOL" and token["value"] == ",":
                     continue
+                elif token["type"] == "SYMBOL" and token["value"] == ";":
+                    break
                 else:
                     errors.append(f"Syntax Error: Unexpected token '{token['value']}' in column list.")
                     
             elif state == "FROM":
                 if token["type"] == "IDENTIFIER":
-                    ast["table"] = token["value"]
+                    if ast["table"]:
+                        errors.append(f"Syntax Error: Unexpected token '{token['value']}' in FROM clause.")
+                    else:
+                        ast["table"] = token["value"]
                 elif token["type"] == "SYMBOL" and token["value"] == ";":
                     break
                 else:

@@ -1,58 +1,50 @@
-import Levenshtein
+import os
+from dotenv import load_dotenv
+load_dotenv()
+from google import genai
 from compiler.schema import SCHEMA
 
-KEYWORDS = ["SELECT", "INSERT", "UPDATE", "DELETE", "FROM", "WHERE", "INTO", "VALUES", "SET"]
-
 class AISuggestionEngine:
-    def get_closest_match(self, word, options, threshold=2):
-        best_match = None
-        min_distance = float('inf')
-        
-        for option in options:
-            dist = Levenshtein.distance(word.upper(), option.upper())
-            if dist < min_distance and dist <= threshold:
-                min_distance = dist
-                best_match = option
-                
-        return best_match
+    def __init__(self):
+        self.api_key = os.getenv("GEMINI_API_KEY")
+        if self.api_key:
+            self.client = genai.Client(api_key=self.api_key)
+        else:
+            self.client = None
 
-    def analyze_errors(self, tokens, lexical_errors, syntax_errors, semantic_errors):
-        suggestions = []
+    def analyze_errors(self, query, tokens, lexical_errors, syntax_errors, semantic_errors):
+        # If there are no errors, no suggestions are needed
+        if not lexical_errors and not syntax_errors and not semantic_errors:
+            return []
+            
+        if not self.client:
+            return ["AI Integration Warning: GEMINI_API_KEY environment variable is not set. Please set it to receive intelligent SQL suggestions."]
+
+        # Compile all the errors into a prompt for Gemini
+        schema_str = str(SCHEMA)
         
-        # Check for misspelled keywords in identifiers
-        for token in tokens:
-            if token["type"] == "IDENTIFIER":
-                val = token["value"]
-                # Maybe it was a misspelled keyword?
-                closest_kw = self.get_closest_match(val, KEYWORDS, threshold=2)
-                
-                # Make sure it's not actually supposed to be a column name or table name
-                valid_identifiers = list(SCHEMA.keys())
-                for t in SCHEMA.values():
-                    valid_identifiers.extend(list(t["columns"].keys()))
-                    
-                if closest_kw and val.lower() not in valid_identifiers:
-                    suggestions.append(f"Identifier '{val}' might be misspelled. Did you mean keyword '{closest_kw}'?")
-                    
-        # Provide suggestions for semantic errors
-        for error in semantic_errors:
-            if "Unknown table" in error:
-                import re
-                match = re.search(r"Unknown table '([^']+)'", error)
-                if match:
-                    table = match.group(1)
-                    closest = self.get_closest_match(table, list(SCHEMA.keys()))
-                    if closest:
-                        suggestions.append(f"Did you mean table '{closest}' instead of '{table}'?")
-            elif "Unknown column" in error:
-                import re
-                match = re.search(r"Unknown column '([^']+)' in table '([^']+)'", error)
-                if match:
-                    col = match.group(1)
-                    table = match.group(2)
-                    if table in SCHEMA:
-                        closest = self.get_closest_match(col, list(SCHEMA[table]["columns"].keys()))
-                        if closest:
-                            suggestions.append(f"Did you mean column '{closest}' instead of '{col}'?")
-                            
-        return suggestions
+        prompt = f"""
+You are an expert SQL Compiler assistant built to help students learn Compiler Design. 
+The student submitted the following SQL Query: '{query}'
+
+The compiler phases reported the following errors:
+Lexical: {lexical_errors}
+Syntax: {syntax_errors}
+Semantic: {semantic_errors}
+
+Here is the predefined database schema available (in Python dict format):
+{schema_str}
+
+Please provide 1 to 2 clear, beginner-friendly sentences acting as an AI Suggestion. 
+If there's a typo in a keyword or a schema entity, suggest the correction.
+Just output the suggestion text, do not use formatting like bold or headers.
+"""
+
+        try:
+            response = self.client.models.generate_content(
+                model='gemini-2.5-flash',
+                contents=prompt
+            )
+            return [response.text.strip()]
+        except Exception as e:
+            return [f"AI Suggestion Error: Could not connect to Gemini API ({str(e)})"]

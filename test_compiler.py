@@ -37,7 +37,7 @@ class TestCompilerPhases(unittest.TestCase):
         ast, syn_err = self.parser.parse(tokens)
         sem_err = self.semantic.analyze(ast)
         self.assertTrue(len(sem_err) > 0, "Should detect unknown column 'names'")
-        suggestions = self.ai.analyze_errors(tokens, l_err, syn_err, sem_err)
+        suggestions = self.ai.analyze_errors(q, tokens, l_err, syn_err, sem_err)
         self.assertTrue(any("name" in s for s in suggestions), "Should suggest correct column 'name'")
         
     def test_ai_suggestion(self):
@@ -45,7 +45,7 @@ class TestCompilerPhases(unittest.TestCase):
         tokens, l_err = self.lexer.tokenize(q)
         ast, syn_err = self.parser.parse(tokens)
         sem_err = self.semantic.analyze(ast)
-        suggestions = self.ai.analyze_errors(tokens, l_err, syn_err, sem_err)
+        suggestions = self.ai.analyze_errors(q, tokens, l_err, syn_err, sem_err)
         self.assertTrue(any("SELECT" in s for s in suggestions), "Should suggest correct keyword 'SELECT'")
 
 if __name__ == '__main__':
