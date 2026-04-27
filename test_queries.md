@@ -51,3 +51,21 @@ Run these queries in the web interface to verify compiler phase checks.
 - **Parser** will fail the syntax check since query doesn't start with recognized keyword.
 - **AI Engine** assesses all `IDENTIFIER`s. Flags `SELEC` as highly likely misspelled `SELECT`.
 - **Suggestions:** "Identifier 'SELEC' might be misspelled. Did you mean keyword 'SELECT'?"
+
+## 8. DROP TABLE Validation
+**Input:** `DROP TABLE students;`
+**Expected Outcome:**
+- **Tokens:** Keywords (`DROP`, `TABLE`), Identifier (`students`).
+- **Syntax Analysis:** Successfully parses Table drop structure.
+- **Errors:** None (if `students` exist in the logic constraints).
+
+## 9. TRUNCATE TABLE Validation
+**Input:** `TRUNCATE TABLE employees;`
+**Expected Outcome:**
+- **Tokens:** Keywords (`TRUNCATE`, `TABLE`), Identifier (`employees`).
+- **Syntax Analysis:** Successfully maps to TRUNCATE block.
+
+## 10. Complex Semantic Analysis Evaluation
+**Input:** `SELECT id, name, salary FROM employees WHERE salary > 5000 AND role LIKE 'manager';`
+**Expected Outcome:**
+- Robust test representing long parsed keywords (LIKE, AND, >) and nested expression validation. AST SVG will span wider to test the scroll feature.

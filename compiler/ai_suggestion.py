@@ -13,14 +13,12 @@ class AISuggestionEngine:
             self.client = None
 
     def analyze_errors(self, query, tokens, lexical_errors, syntax_errors, semantic_errors):
-        # If there are no errors, no suggestions are needed
         if not lexical_errors and not syntax_errors and not semantic_errors:
             return []
             
         if not self.client:
             return ["AI Integration Warning: GEMINI_API_KEY environment variable is not set. Please set it to receive intelligent SQL suggestions."]
 
-        # Compile all the errors into a prompt for Gemini
         schema_str = str(SCHEMA)
         
         prompt = f"""

@@ -6,14 +6,14 @@ class Parser:
         errors = []
         ast = {}
         
-        # filter out whitespaces
+        
         tokens = [t for t in tokens if t["type"] != "WHITESPACE"]
         
         if not tokens:
             errors.append("Syntax Error: Empty query.")
             return ast, errors
 
-        # Basic parsing structure based on the first keyword
+    
         first_token = tokens[0]
         
         if first_token["type"] == "KEYWORD":
@@ -26,6 +26,10 @@ class Parser:
                 ast, errors = self.parse_update(tokens)
             elif command == "DELETE":
                 ast, errors = self.parse_delete(tokens)
+            elif command == "DROP":
+                ast, errors = self.parse_drop(tokens)
+            elif command == "TRUNCATE":
+                ast, errors = self.parse_truncate(tokens)
             else:
                 errors.append(f"Syntax Error: Unsupported statement starting with '{command}'")
         else:
@@ -50,7 +54,7 @@ class Parser:
                 ast["where"] = []
                 continue
             elif token["value"].upper() in ["ORDER", "GROUP", "LIMIT"]:
-                break # We only support basic SELECT FROM and simple WHERE for this project scope
+                break
                 
             if state == "COLUMNS":
                 if token["type"] == "IDENTIFIER" or (token["type"] == "SYMBOL" and token["value"] == "*"):
@@ -125,5 +129,38 @@ class Parser:
                 ast["table"] = tokens[2]["value"]
         except IndexError:
             errors.append("Syntax Error: Incomplete DELETE statement.")
+            
+        return ast, errors
+
+    def parse_drop(self, tokens):
+        ast = {"type": "DROP", "table": None}
+        errors = []
+        try:
+            if tokens[1]["value"].upper() != "TABLE":
+                errors.append("Syntax Error: Expected 'TABLE' after 'DROP'.")
+            if tokens[2]["type"] != "IDENTIFIER":
+                errors.append("Syntax Error: Expected table name.")
+            else:
+                ast["table"] = tokens[2]["value"]
+        except IndexError:
+            errors.append("Syntax Error: Incomplete DROP statement.")
+            
+        return ast, errors
+
+    def parse_truncate(self, tokens):
+        ast = {"type": "TRUNCATE", "table": None}
+        errors = []
+        try:
+            if tokens[1]["value"].upper() == "TABLE":
+                if len(tokens) > 2 and tokens[2]["type"] == "IDENTIFIER":
+                    ast["table"] = tokens[2]["value"]
+                else:
+                    errors.append("Syntax Error: Expected table name.")
+            elif tokens[1]["type"] == "IDENTIFIER":
+                ast["table"] = tokens[1]["value"]
+            else:
+                errors.append("Syntax Error: Expected table name or 'TABLE' keyword.")
+        except IndexError:
+            errors.append("Syntax Error: Incomplete TRUNCATE statement.")
             
         return ast, errors

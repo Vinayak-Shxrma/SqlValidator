@@ -3,7 +3,7 @@ import re
 class Lexer:
     def __init__(self):
         self.token_specs = [
-            ("KEYWORD", r'\b(SELECT|INSERT|UPDATE|DELETE|FROM|WHERE|INTO|VALUES|SET|AND|OR)\b'),
+            ("KEYWORD", r'\b(SELECT|INSERT|UPDATE|DELETE|FROM|WHERE|INTO|VALUES|SET|AND|OR|LIKE|DROP|TRUNCATE|TABLE)\b'),
             ("IDENTIFIER", r'\b[a-zA-Z_][a-zA-Z0-9_]*\b'),
             ("OPERATOR", r'[=><]+'),
             ("LITERAL_STRING", r"'[^']*'"),

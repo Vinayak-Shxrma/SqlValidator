@@ -4,41 +4,90 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SQL Validation System</title>
+    <!-- Modern Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Load feather icons for polished visuals -->
+    <script src="https://unpkg.com/feather-icons"></script>
 </head>
 <body>
+    <div class="app-background">
+        <div class="floating-orb orb-1"></div>
+        <div class="floating-orb orb-2"></div>
+        <div class="floating-orb orb-3"></div>
+    </div>
+
     <div class="container">
-        <header>
-            <h1>SQL Query Validation System</h1>
-            <p class="subtitle">Based on Compiler Phases</p>
+        <!-- Header -->
+        <header class="app-header glass-card">
+            <div class="logo">
+                <i data-feather="database" class="logo-icon"></i>
+            </div>
+            <div class="header-text">
+                <h1>SQL Query Analyzer</h1>
+                <p>Intelligent Compiler-based Validation</p>
+            </div>
         </header>
 
-        <div class="main-content">
-            <div class="input-section">
-                <h2>Input Query</h2>
-                <textarea id="sqlQuery" placeholder="Enter your SQL query here... (e.g., SELECT name FROM students;)"></textarea>
-                <button id="validateBtn">Validate Query</button>
+        <!-- Main Content -->
+        <main class="main-layout">
+            <!-- Left Side: Input and AI Suggestion -->
+            <div class="left-panel">
+                <section class="input-section glass-card">
+                    <div class="section-header">
+                        <h2><i data-feather="code"></i> Query Input</h2>
+                    </div>
+                    <textarea id="sqlQuery" spellcheck="false" placeholder="Enter your SQL query..."></textarea>
+                    <button id="validateBtn" class="btn-primary">
+                        <i data-feather="play"></i> Analyze Query
+                    </button>
+                    <!-- Global Status Indicator -->
+                    <div id="globalStatus" class="global-status hidden"></div>
+                </section>
+
+                <section class="ai-section glass-card" id="aiSection">
+                    <div class="section-header ai-header">
+                        <h2><i data-feather="zap" class="text-warning"></i> AI Assistant</h2>
+                    </div>
+                    <div id="aiSuggestions" class="ai-content">
+                        <p class="text-muted text-center"><i data-feather="loader" class="feather-pulse"></i> Waiting for query...</p>
+                    </div>
+                </section>
             </div>
 
-            <div class="output-section">
-                <div class="panel" id="tokensPanel">
-                    <h3>Lexical Analysis (Tokens)</h3>
-                    <div class="content" id="tokensContent">Awaiting input...</div>
+            <!-- Right Side: Tabbed Results -->
+            <div class="right-panel glass-card">
+                <div class="tabs">
+                    <button class="tab-btn active" data-target="lexicalTab"><i data-feather="hash"></i> Lexical Result</button>
+                    <button class="tab-btn" data-target="astTab"><i data-feather="git-merge"></i> Abstract Syntax Tree</button>
                 </div>
 
-                <div class="panel error-panel" id="errorsPanel">
-                    <h3>Compiler Errors</h3>
-                    <div class="content" id="errorsContent">No errors detected.</div>
-                </div>
+                <div class="tab-content-container">
+                    <!-- Lexical Tab -->
+                    <div id="lexicalTab" class="tab-pane active">
+                        <h3 class="pane-title">Categorized Tokens</h3>
+                        <div id="lexicalErrors" class="errors-container"></div>
+                        <div id="lexicalContent" class="categorized-tokens">
+                            <p class="text-muted text-center mt-4">Tokens will appear here grouped by category.</p>
+                        </div>
+                    </div>
 
-                <div class="panel suggestion-panel" id="suggestionsPanel">
-                    <h3>AI Suggestions</h3>
-                    <div class="content" id="suggestionsContent">No suggestions needed.</div>
+                    <!-- Abstract Syntax Tree Tab -->
+                    <div id="astTab" class="tab-pane">
+                        <h3 class="pane-title">Abstract Syntax Tree (AST)</h3>
+                        <div id="astErrors" class="errors-container"></div>
+                        <div class="svg-container" id="astSvgContainer">
+                            <p class="text-muted text-center mt-4">SVG AST will be drawn here.</p>
+                        </div>
+                    </div>
                 </div>
             </div>
-        </div>
+        </main>
     </div>
+
+    <script>
+        feather.replace();
+    </script>
     <script src="{{ url_for('static', filename='script.js') }}"></script>
 </body>
 </html>
