@@ -2,7 +2,7 @@
 
 An intelligent, compiler-based SQL validation system built with Flask. It validates SQL queries through three formal compiler phases — Lexical Analysis, Syntax Parsing, and Semantic Analysis — and provides AI-powered suggestions via Google Gemini.
 
-> **Academic Project** — Graphic Era (Deemed to be University), B.Tech CSE (AI), Semester VI  
+> **PBL Project** — Graphic Era (Deemed to be University), B.Tech CSE (AI), Semester VI  
 > Subject: Compiler Design (TCS 601)
 
 ---
